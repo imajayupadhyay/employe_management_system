@@ -1,0 +1,5 @@
+[13-Feb-2025 21:44:14 Asia/Kolkata] PHP Fatal error:  Uncaught mysqli_sql_exception: Table 'ems_db.assigned_tasks' doesn't exist in /Applications/XAMPP/xamppfiles/htdocs/ems/employees/dashboard.php:23
+Stack trace:
+#0 /Applications/XAMPP/xamppfiles/htdocs/ems/employees/dashboard.php(23): mysqli->query('SELECT COUNT(*)...')
+#1 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/ems/employees/dashboard.php on line 23
