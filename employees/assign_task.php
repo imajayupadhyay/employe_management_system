@@ -13,9 +13,10 @@ $task_status = ""; // Variable to track task assignment status
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $assigned_to = $_POST['assigned_to'];
     $task_description = $conn->real_escape_string($_POST['task_description']);
+    $deadline = $_POST['deadline']; // Get deadline from form input
 
-    $sql = "INSERT INTO assigned_tasks (assigned_by, assigned_to, task_description)
-            VALUES ('$employee_id', '$assigned_to', '$task_description')";
+    $sql = "INSERT INTO assigned_tasks (assigned_by, assigned_to, task_description, deadline)
+            VALUES ('$employee_id', '$assigned_to', '$task_description', '$deadline')";
 
     if ($conn->query($sql) === TRUE) {
         $task_status = "success"; // ✅ Task Assigned Successfully
@@ -43,24 +44,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-weight: bold;
         }
         .modal-content {
-    border-radius: 15px;
-    text-align: center;
-}
-
-.modal-body i {
-    font-size: 60px;
-}
-
-.modal-footer {
-    border-top: none;
-}
-
-.btn-primary {
-    background: #007bff;
-    border-radius: 8px;
-    padding: 10px;
-}
-
+            border-radius: 15px;
+            text-align: center;
+        }
+        .modal-body i {
+            font-size: 60px;
+        }
+        .modal-footer {
+            border-top: none;
+        }
+        .btn-primary {
+            background: #007bff;
+            border-radius: 8px;
+            padding: 10px;
+        }
     </style>
 
     <!-- TinyMCE Editor -->
@@ -100,6 +97,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="mb-3">
                     <label class="form-label">Task Description</label>
                     <textarea id="task_description" name="task_description"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Deadline</label>
+                    <input type="date" name="deadline" class="form-control" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-30">Assign Task</button>
             </form>

@@ -15,8 +15,10 @@ if (isset($_GET['delete'])) {
 }
 
 // Fetch All Assigned Tasks
-$tasks = $conn->query("SELECT assigned_tasks.*, employees.first_name, employees.last_name FROM assigned_tasks 
-                        JOIN employees ON assigned_tasks.assigned_to = employees.id");
+$tasks = $conn->query("SELECT assigned_tasks.*, employees.first_name, employees.last_name 
+                       FROM assigned_tasks 
+                       JOIN employees ON assigned_tasks.assigned_to = employees.id");
+
 ?>
 
 <!DOCTYPE html>
@@ -75,28 +77,31 @@ $tasks = $conn->query("SELECT assigned_tasks.*, employees.first_name, employees.
             <h2>Manage Tasks</h2>
             <a href="assign_task.php" class="btn btn-success mb-3">+ Assign Task</a>
             <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Employee</th>
-                        <th>Task Description</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = $tasks->fetch_assoc()) { ?>
-                        <tr>
-                            <td><?= $row['first_name'] . " " . $row['last_name']; ?></td>
-                            <td><?= $row['task_description']; ?></td>
-                            <td><?= $row['status']; ?></td>
-                            <td>
-                                <a href="edit_task.php?id=<?= $row['id']; ?>" class="btn btn-warning">Edit</a>
-                                <a href="manage_tasks.php?delete=<?= $row['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
-                            </td>
-                        </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+    <thead>
+        <tr>
+            <th>Employee</th>
+            <th>Task Description</th>
+            <th>Deadline</th> <!-- ✅ New Column -->
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php while ($row = $tasks->fetch_assoc()) { ?>
+            <tr>
+                <td><?= $row['first_name'] . " " . $row['last_name']; ?></td>
+                <td><?= $row['task_description']; ?></td>
+                <td><?= date("d M Y", strtotime($row['deadline'])); ?></td> <!-- ✅ Format Deadline -->
+                <td class="status-<?= strtolower($row['status']); ?>"><?= $row['status']; ?></td>
+                <td>
+                    <a href="edit_task.php?id=<?= $row['id']; ?>" class="btn btn-warning">Edit</a>
+                    <a href="manage_tasks.php?delete=<?= $row['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+        <?php } ?>
+    </tbody>
+</table>
+
         </div>
     </div>
 </body>

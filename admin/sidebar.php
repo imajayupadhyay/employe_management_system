@@ -96,6 +96,16 @@ body {
                 <i class="bi bi-clock-history"></i> Attendance Report
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link <?= ($current_page == 'department.php') ? 'active' : '' ?>" href="department.php">
+                <i class="bi bi-arrow-right-circle"></i> Departments
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link <?= ($current_page == 'designation.php') ? 'active' : '' ?>" href="designation.php">
+                <i class="bi bi-arrow-right-circle"></i> Designations
+            </a>
+        </li>
         <li class="nav-item bg-danger mt-5">
             <a class="nav-link text-white" href="logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout

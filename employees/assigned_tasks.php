@@ -21,15 +21,19 @@ $tasks_result = $conn->query($tasks_query);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="../assets/css/tasks.css" rel="stylesheet">
     <style>
-     .navbar{
-    background-color:#05386b;
-   margin:0px;
-   border-radius:25px;
-}
-.navbar-brand{
-    color:white;
-    font-size:bold;
-}
+        .navbar {
+            background-color:#05386b;
+            margin:0px;
+            border-radius:25px;
+        }
+        .navbar-brand {
+            color:white;
+            font-size:bold;
+        }
+        .overdue {
+            color: red;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -45,15 +49,27 @@ $tasks_result = $conn->query($tasks_query);
                     <tr>
                         <th>Assigned By</th>
                         <th>Task</th>
+                        <th>Deadline</th>
                         <th>Status</th>
                         <th>Update</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($task = $tasks_result->fetch_assoc()) { ?>
+                    <?php while ($task = $tasks_result->fetch_assoc()) { 
+                        $deadline = strtotime($task['deadline']);
+                        $today = strtotime(date("Y-m-d"));
+                        $is_overdue = ($deadline < $today && $task['status'] != 'Completed');
+                    ?>
                         <tr>
                             <td><?= $task['first_name'] . " " . $task['last_name'] ?></td>
                             <td><?= $task['task_description'] ?></td>
+                            <td class="<?= ($task['deadline'] != '0000-00-00' && strtotime($task['deadline']) < time() && $task['status'] != 'Completed') ? 'overdue' : ''; ?>">
+    <?= ($task['deadline'] == '0000-00-00' || empty($task['deadline'])) 
+        ? '<span class="text-danger">No Deadline Set</span>' 
+        : date("d-M-Y", strtotime($task['deadline'])); ?>
+</td>
+
+
                             <td><?= $task['status'] ?></td>
                             <td>
                                 <a href="update_task.php?task_id=<?= $task['id'] ?>" class="btn btn-sm btn-warning">Update</a>

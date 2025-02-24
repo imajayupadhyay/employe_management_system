@@ -8,31 +8,8 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-// Fetch All Employees
+// Fetch all employees for the dropdown
 $employees = $conn->query("SELECT id, first_name, last_name FROM employees");
-
-// Check if Employee is Selected
-$selected_employee = isset($_GET['employee_id']) ? $conn->real_escape_string($_GET['employee_id']) : '';
-$attendance_records = [];
-
-if (!empty($selected_employee)) {
-    // Debug: Check Employee Selection
-    if (!is_numeric($selected_employee)) {
-        die("Invalid Employee ID");
-    }
-
-    // Fetch Attendance Records
-    $attendance_query = "SELECT * FROM attendance WHERE employee_id = '$selected_employee' ORDER BY date DESC";
-    $attendance_result = $conn->query($attendance_query);
-
-    if (!$attendance_result) {
-        die("Error: " . $conn->error); // Debugging - Show SQL error if query fails
-    }
-
-    while ($row = $attendance_result->fetch_assoc()) {
-        $attendance_records[] = $row;
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -41,30 +18,41 @@ if (!empty($selected_employee)) {
     <title>Attendance Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/attendance.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery for AJAX -->
 </head>
 <body>
     <div class="wrapper">
         <?php include "sidebar.php"; ?>
-        
+
         <div class="main-content">
             <h2 class="mb-4">Attendance Report</h2>
 
-            <!-- Employee Selection Form -->
-            <form method="GET" class="mb-3">
-                <label for="employee">Select Employee:</label>
-                <select name="employee_id" id="employee" class="form-control w-50 d-inline-block" required>
-                    <option value="">-- Select Employee --</option>
-                    <?php while ($row = $employees->fetch_assoc()) { ?>
-                        <option value="<?= $row['id']; ?>" <?= ($selected_employee == $row['id']) ? 'selected' : ''; ?>>
-                            <?= $row['first_name'] . " " . $row['last_name']; ?>
-                        </option>
-                    <?php } ?>
-                </select>
-                <button type="submit" class="btn btn-primary">View Report</button>
+            <!-- Filters for Employee and Month -->
+            <form id="filterForm" class="mb-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="employee">Select Employee:</label>
+                        <select name="employee_id" id="employee" class="form-control">
+                            <option value="">-- All Employees --</option>
+                            <?php while ($row = $employees->fetch_assoc()) { ?>
+                                <option value="<?= $row['id']; ?>">
+                                    <?= $row['first_name'] . " " . $row['last_name']; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="month">Select Month:</label>
+                        <input type="month" name="month" id="month" class="form-control">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    </div>
+                </div>
             </form>
 
             <!-- Attendance Table -->
-            <?php if (!empty($selected_employee)): ?>
+            <div id="attendanceTable">
                 <h4>Attendance Records</h4>
                 <table class="table table-bordered mt-3">
                     <thead>
@@ -76,22 +64,34 @@ if (!empty($selected_employee)) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($attendance_records)): ?>
-                            <?php foreach ($attendance_records as $record): ?>
-                                <tr>
-                                    <td><?= date("d M Y", strtotime($record['date'])); ?></td>
-                                    <td><?= date("h:i A", strtotime($record['punch_in'])); ?></td>
-                                    <td><?= ($record['punch_out']) ? date("h:i A", strtotime($record['punch_out'])) : 'Not Yet'; ?></td>
-                                    <td><?= ($record['worked_hours']) ? $record['worked_hours'] . ' hrs' : 'Pending'; ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr><td colspan="4" class="text-center">No attendance records found.</td></tr>
-                        <?php endif; ?>
+                        <tr><td colspan="4" class="text-center">Select filters to view attendance.</td></tr>
                     </tbody>
                 </table>
-            <?php endif; ?>
+            </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#filterForm").submit(function (e) {
+                e.preventDefault(); // Prevent page reload
+
+                var employee_id = $("#employee").val();
+                var month = $("#month").val();
+
+                $.ajax({
+                    url: "fetch_attendance.php",
+                    type: "POST",
+                    data: { employee_id: employee_id, month: month },
+                    success: function (response) {
+                        $("#attendanceTable").html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
