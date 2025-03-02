@@ -106,6 +106,11 @@ body {
                 <i class="bi bi-arrow-right-circle"></i> Designations
             </a>
         </li>
+        <li class="nav-item">
+    <a class="nav-link" href="manage_ips.php">
+        <i class="bi bi-globe"></i> Manage Employee IPs
+    </a>
+</li>
         <li class="nav-item bg-danger mt-5">
             <a class="nav-link text-white" href="logout.php">
                 <i class="bi bi-box-arrow-right"></i> Logout

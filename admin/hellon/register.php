@@ -1,5 +1,5 @@
 <?php
-include "../includes/config.php";
+include "../../includes/config.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = $conn->real_escape_string($_POST['first_name']);
